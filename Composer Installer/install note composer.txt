@@ -1,0 +1,55 @@
+Windows Installer
+The installer will download composer for you and set up your PATH environment variable so you can simply call composer from any directory.
+
+Download and run Composer-Setup.exe - it will install the latest composer version whenever it is executed.
+https://getcomposer.org/Composer-Setup.exe
+
+
+How do I install Composer programmatically?#
+
+As noted on the download page, the installer script contains a signature which changes when the installer code changes and as such it should not be relied upon in the long term.
+
+An alternative is to use this script which only works with UNIX utilities:
+
+
+#!/bin/sh
+
+EXPECTED_SIGNATURE="$(wget -q -O - https://composer.github.io/installer.sig)"
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+ACTUAL_SIGNATURE="$(php -r "echo hash_file('SHA384', 'composer-setup.php');")"
+
+if [ "$EXPECTED_SIGNATURE" != "$ACTUAL_SIGNATURE" ]
+then
+    >&2 echo 'ERROR: Invalid installer signature'
+    rm composer-setup.php
+    exit 1
+fi
+
+php composer-setup.php --quiet
+RESULT=$?
+rm composer-setup.php
+exit $RESULT
+
+
+
+The script will exit with 1 in case of failure, or 0 on success, and is quiet if no error occurs.
+
+Alternatively, if you want to rely on an exact copy of the installer, you can fetch a specific version from GitHub's history. The commit hash should be enough to give it uniqueness and authenticity as long as you can trust the GitHub servers. For example:
+
+
+wget https://raw.githubusercontent.com/composer/getcomposer.org/1b137f8bf6db3e79a38a5bc45324414a6b1f9df2/web/installer -O - -q | php -- --quiet
+
+
+
+
+
+Command-line installation
+
+To quickly install Composer in the current directory, run the following script in your terminal. To automate the installation, use the guide on installing Composer programmatically.
+
+
+
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+php -r "if (hash_file('SHA384', 'composer-setup.php') === '544e09ee996cdf60ece3804abc52599c22b1f40f4323403c44d44fdfdd586475ca9813a858088ffbc1f233e9b180f061') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+php composer-setup.php
+php -r "unlink('composer-setup.php');"

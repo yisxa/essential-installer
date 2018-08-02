@@ -1,0 +1,7 @@
+Installation
+Install Composer and run the following command to get the latest version:
+
+
+composer require "twig/twig:^2.0" for php7
+
+composer require "twig/twig:^1" for php5.6
